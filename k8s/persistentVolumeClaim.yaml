@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: front-data
+spec:
+  accessModes:
+    - ReadWriteMany # frontend and middleware
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: front-shared-storage
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: back-data
+spec:
+  accessModes:
+    - ReadWriteMany # backend and middleware
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: back-shared-storage

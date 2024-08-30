@@ -1,0 +1,227 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      volumes: # pod 레벨
+        - name: db-data
+          persistentVolumeClaim:
+            claimName: db-data
+      containers:
+      - env:
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_DB
+              name: db-env
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_USER
+              name: db-env
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_PASSWORD
+              name: db-env
+        image: postgres
+        name: db
+        volumeMounts: # container 레벨
+          - mountPath: /var/lib/postgresql/data
+            name: db-data
+      restartPolicy: Always
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      volumes:
+        - name: back-data
+          persistentVolumeClaim:
+            claimName: back-data
+      containers:
+      - env:
+        - name: SECRET_KEY
+          valueFrom:
+            configMapKeyRef:
+              key: SECRET_KEY
+              name: back-env
+        - name: ALGORITHM
+          valueFrom:
+            configMapKeyRef:
+              key: ALGORITHM
+              name: back-env
+        - name: EMAIL_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: EMAIL_HOST
+              name: back-env
+        - name: EMAIL_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: EMAIL_PORT
+              name: back-env
+        - name: EMAIL_HOST_USER
+          valueFrom:
+            configMapKeyRef:
+              key: EMAIL_HOST_USER
+              name: back-env
+        - name: EMAIL_HOST_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: EMAIL_HOST_PASSWORD
+              name: back-env
+        - name: INTRA_AUTHORIZE_API_URL
+          valueFrom:
+            configMapKeyRef:
+              key: INTRA_AUTHORIZE_API_URL
+              name: back-env
+        - name: INTRA_TOKEN_API_URL
+          valueFrom:
+            configMapKeyRef:
+              key: INTRA_TOKEN_API_URL
+              name: back-env
+        - name: INTRA_USERINFO_API_URL
+          valueFrom:
+            configMapKeyRef:
+              key: INTRA_USERINFO_API_URL
+              name: back-env
+        - name: INTRA_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              key: INTRA_CLIENT_ID
+              name: back-env
+        - name: INTRA_CLIENT_SECRET
+          valueFrom:
+            configMapKeyRef:
+              key: INTRA_CLIENT_SECRET
+              name: back-env
+        - name: INTRA_REDIRECT_URI
+          valueFrom:
+            configMapKeyRef:
+              key: INTRA_REDIRECT_URI
+              name: back-env
+        - name: DJANGO_ALLOWED_HOSTS
+          valueFrom:
+            configMapKeyRef:
+              key: DJANGO_ALLOWED_HOSTS
+              name: back-env
+        - name: DJANGO_CORS_ALLOWED_ORIGINS
+          valueFrom:
+            configMapKeyRef:
+              key: DJANGO_CORS_ALLOWED_ORIGINS
+              name: back-env
+        - name: DJANGO_ALLOWED_CSRF_HOSTS
+          valueFrom:
+            configMapKeyRef:
+              key: DJANGO_ALLOWED_CSRF_HOSTS
+              name: back-env
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              key: DATABASE_URL
+              name: back-env
+        image: kmj951015/retro-pong-backend:1.0.0
+        name: backend
+        volumeMounts:
+          - mountPath: /app/media
+            name: back-data
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+      restartPolicy: Always
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      volumes:
+        - name: front-data
+          persistentVolumeClaim:
+            claimName: front-data
+      containers:
+      - env:
+        - name: VITE_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              key: VITE_BASE_URL
+              name: front-env
+        - name: VITE_WS_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              key: VITE_WS_BASE_URL
+              name: front-env
+        image: kmj951015/retro-pong-frontend:1.0.0
+        name: frontend
+        volumeMounts:
+          - mountPath: /app/dist
+            name: front-data
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: middleware
+spec:
+  selector:
+    matchLabels:
+      app: middleware
+  template:
+    metadata:
+      labels:
+        app: middleware
+    spec:
+      volumes:
+        - name: front-data
+          persistentVolumeClaim:
+            claimName: front-data
+        - name: back-data
+          persistentVolumeClaim:
+            claimName: back-data
+      containers:
+      - image: kmj951015/retro-pong-middleware:1.0.0
+        name: middleware
+        volumeMounts:
+          - mountPath: /usr/share/nginx/html
+            name: front-data
+          - mountPath: /app/media
+            name: back-data
+        ports:
+        - containerPort: 443
+          protocol: TCP
+      restartPolicy: Always
