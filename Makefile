@@ -1,39 +1,19 @@
-frontendImg = frontend:transcendence
-nginxImg = nginx:transcendence
+PROJECT_DIR := $(PWD)
 
-up: build
-	docker compose -f ./docker-compose.yml up
+.PHONY: local copy_dir clean fclean
 
-build:
-	docker compose -f ./docker-compose.yml build
+local: copy_dir
+	kubectl apply -f k8s/configMap.yaml
+	sed "s|DIR|$(PROJECT_DIR)|g" k8s/localPersistentVolume.yaml | kubectl apply -f -
+	kubectl apply -f k8s/persistentVolumeClaim.yaml
+	kubectl apply -f k8s/deployment.yaml
+	kubectl apply -f k8s/service.yaml
 
-stop:
-	docker compose -f ./docker-compose.yml stop
+copy_dir:
+	cp -r data tmp_data
 
-start:
-	docker compose -f ./docker-compose.yml start
+clean:
+	kubectl delete -f k8s/.
 
-down:
-	docker compose -f ./docker-compose.yml down
-
-downV:
-	docker compose -f ./docker-compose.yml down -v
-
-imgClean:
-	@if [ $(shell docker image ls | grep frontend | wc -l) -eq 1 ]; \
-		then docker rmi $(frontendImg); fi
-	@if [ $(shell docker image ls | grep nginx | wc -l) -eq 1 ]; \
-		then docker rmi $(nginxImg); fi
-
-clean: downV imgClean
-
-# Remove all stoped containers, all unused images, all networks not used by at least one container, unused build cache
-fclean:
-	yes | docker container prune
-	yes | docker image prune
-	yes | docker network prune
-	yes | docker system prune
-
-re: down up
-
-.PHONY: up build all stop down downVolume re imgClean clean
+fclean: clean
+	rm -rf tmp_data
