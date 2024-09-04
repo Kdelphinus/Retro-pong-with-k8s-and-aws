@@ -11,17 +11,17 @@ spec:
 
 ---
 
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: front-data
-spec:
-  accessModes:
-    - ReadWriteMany # frontend and middleware
-  resources:
-    requests:
-      storage: 100Mi
-  storageClassName: front-shared-storage
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: front-data
+#spec:
+#  accessModes:
+#    - ReadWriteMany # frontend and middleware
+#  resources:
+#    requests:
+#      storage: 100Mi
+#  storageClassName: front-shared-storage
 
 ---
 
