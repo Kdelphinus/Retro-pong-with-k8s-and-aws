@@ -1,6 +1,6 @@
 PROJECT_DIR := $(PWD)
 
-.PHONY: local copy_dir clean fclean
+.PHONY: local copy_dir re clean fclean
 
 local: copy_dir
 	kubectl apply -f k8s/configMap.yaml
@@ -11,6 +11,10 @@ local: copy_dir
 
 copy_dir:
 	cp -r data tmp_data
+
+re:
+	make clean
+	make local
 
 clean:
 	kubectl delete -f k8s/.
