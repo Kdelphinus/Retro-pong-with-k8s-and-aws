@@ -11,7 +11,7 @@ local: copy_dir
 
 local_gocd: copy_dir
 	kubectl apply -f k8s/configMap.yaml
-	sed "s|DIR|&(PROJECT_DIR)/pipeline/retro-pong|g" k8s/localPersistentVolume.yaml | kubectl apply -f -
+	sed "s|DIR|$(PROJECT_DIR)/pipeline/retro-pong|g" k8s/localPersistentVolume.yaml | kubectl apply -f -
 	kubectl apply -f k8s/persistentVolumeClaim.yaml
 	kubectl apply -f k8s/deployment.yaml
 	kubectl apply -f k8s/service.yaml
