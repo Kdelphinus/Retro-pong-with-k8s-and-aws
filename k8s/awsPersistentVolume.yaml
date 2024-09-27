@@ -1,0 +1,48 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass  # 동적 프로비저닝
+metadata:
+  name: ebs-sc
+provisioner: ebs.csi.aws.com  # AWS EBS CSI 드라이버를 사용하여 스토리지를 동적으로 프로비저닝
+volumeBindingMode: WaitForFirstConsumer  # 처음으로 사용하는 파드가 생성되기 전까지 프로비저닝되지 않음
+parameters:
+  type: gp3  # AWS EBS에서 gp3 유형의 볼륨 사용. 일반적인 SSD 스토리지 유형
+  encrypted: "true"  # EBS 볼륨 암호화
+
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: efs-sc
+provisioner: efs.csi.aws.com  # AWS EFS CSI 드라이버 사용하여 스토리지를 동적으로 프로비저닝
+parameters:
+  provisioningMode: efs-ap  # EFS의 Access Point를 사용하여 파일 시스템을 연결
+  # TODO
+  fileSystemId: fs-xxxxxxxx  # 존재하는 efs ID 입력
+  directoryPerms: "700"  # EFS 파일 시스템 내의 디렉터리 권한 설정. 700은 소유자만 읽기, 쓰기, 실행 권한을 가짐
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ebs-sc
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+
+# AWS EFS는 파일 시스템이므로 스토리지 크기를 고정하지 않는다. 즉 용량을 미리 할당하지 않으며 요청된 용량도 무시된다.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: back-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc
