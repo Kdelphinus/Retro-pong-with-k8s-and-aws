@@ -18,6 +18,12 @@ local_gocd: copy_dir create_namespace
 	kubectl apply $(FLAG) k8s/deployment.yaml
 	kubectl apply $(FLAG) k8s/service.yaml
 
+aws: create_namespace
+	kubectl apply $(FLAG) k8s/configMap.yaml
+	kubectl apply $(FLAG) k8s/deployment.yaml
+	kubectl apply $(FLAG) k8s/service.yaml
+	kubectl apply $(FLAG) k8s/awsPersistentVolume.yaml
+
 copy_dir:
 	cp -r data tmp_data
 
