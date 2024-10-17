@@ -2,19 +2,17 @@ PROJECT_DIR := $(PWD)
 NAMESPACE = app
 FLAG = -n $(NAMESPACE) -f
 
-.PHONY: local copy_dir re clean fclean
+.PHONY: local local_gocd aws copy_dir create_namespace re clean fclean
 
 local: copy_dir create_namespace
 	kubectl apply $(FLAG) k8s/configMap.yaml
-	sed "s|DIR|$(PROJECT_DIR)|g" k8s/localPersistentVolume.yaml | kubectl apply -f -
-	kubectl apply $(FLAG) k8s/persistentVolumeClaim.yaml
+	sed "s|DIR|$(PROJECT_DIR)|g" k8s/localPersistentVolume.yaml | kubectl apply $(FLAG) -
 	kubectl apply $(FLAG) k8s/deployment.yaml
 	kubectl apply $(FLAG) k8s/service.yaml
 
 local_gocd: copy_dir create_namespace
 	kubectl apply $(FLAG) k8s/configMap.yaml -n app
-	sed "s|DIR|$(PROJECT_DIR)/pipelines/retro-pong|g" k8s/localPersistentVolume.yaml | kubectl apply -f -
-	kubectl apply $(FLAG) k8s/persistentVolumeClaim.yaml
+	sed "s|DIR|$(PROJECT_DIR)/pipelines/retro-pong|g" k8s/localPersistentVolume.yaml | kubectl apply $(FLAG) -
 	kubectl apply $(FLAG) k8s/deployment.yaml
 	kubectl apply $(FLAG) k8s/service.yaml
 
