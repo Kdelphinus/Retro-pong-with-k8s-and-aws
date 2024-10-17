@@ -51,7 +51,7 @@ DJANGO_ALLOWED_CSRF_HOSTS = os.getenv("DJANGO_ALLOWED_CSRF_HOSTS", "").split(","
 DEBUG = False
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
 
 
 # Application definition
