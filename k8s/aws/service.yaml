@@ -38,6 +38,4 @@ spec:
     - name: "443"
       port: 443
       targetPort: 443
-#      nodePort: 30443
-#  type: NodePort
   type: LoadBalancer

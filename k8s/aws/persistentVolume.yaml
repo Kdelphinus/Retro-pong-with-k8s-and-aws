@@ -14,11 +14,11 @@ parameters:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: efs-sc
+  name: efs-sc  # pv는 글로벌 범위기에 namespace 표기 할 필요 없음
 provisioner: efs.csi.aws.com  # AWS EFS CSI 드라이버 사용하여 스토리지를 동적으로 프로비저닝
 parameters:
   provisioningMode: efs-ap  # EFS의 Access Point를 사용하여 파일 시스템을 연결
-  fileSystemId: fs-  # TODO 존재하는 efs ID 입력
+  fileSystemId: fs-  # TODO 생성한 efs ID 입력
   directoryPerms: "700"  # EFS 파일 시스템 내의 디렉터리 권한 설정. 700은 소유자만 읽기, 쓰기, 실행 권한을 가짐
 
 ---

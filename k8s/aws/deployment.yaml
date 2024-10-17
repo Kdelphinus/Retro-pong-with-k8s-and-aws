@@ -67,7 +67,6 @@ spec:
           persistentVolumeClaim:
             claimName: back-data
       containers:
-#      - image: kmj951015/retro-pong-backend:1.0.1
       - image: kmj951015/retro-pong-backend-aws:1.0.1
         name: backend
         volumeMounts:
@@ -99,7 +98,6 @@ spec:
           persistentVolumeClaim:
             claimName: back-data
       containers:
-#      - image: kmj951015/retro-pong-frontend:1.0.1
       - image: kmj951015/retro-pong-frontend-aws:1.0.1
         name: frontend
         volumeMounts:
