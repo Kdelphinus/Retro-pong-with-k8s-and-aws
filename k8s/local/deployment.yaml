@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      volumes: # pod 레벨
+        - name: db-data
+          persistentVolumeClaim:
+            claimName: db-data
+      containers:
+      - env:
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_DB
+              name: db-env
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_USER
+              name: db-env
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_PASSWORD
+              name: db-env
+        image: postgres
+        name: db
+        volumeMounts: # container 레벨
+          - mountPath: /var/lib/postgresql/data
+            name: db-data
+      restartPolicy: Always
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: app
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      volumes:
+        - name: back-data
+          persistentVolumeClaim:
+            claimName: back-data
+      containers:
+      - image: kmj951015/retro-pong-backend:1.0.1
+        name: backend
+        volumeMounts:
+          - mountPath: /app/media
+            name: back-data
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+      restartPolicy: Always
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: app
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      volumes:
+        - name: back-data
+          persistentVolumeClaim:
+            claimName: back-data
+      containers:
+      - image: kmj951015/retro-pong-frontend:1.0.1
+        name: frontend
+        volumeMounts:
+          - mountPath: /app/media
+            name: back-data
+        ports:
+        - containerPort: 443
+          protocol: TCP
+      restartPolicy: Always
