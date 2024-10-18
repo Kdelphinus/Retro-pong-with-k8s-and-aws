@@ -4,6 +4,7 @@ metadata:
   labels:
     app: db-env
   name: db-env
+  namespace: app
 data:
   POSTGRES_DB: "database"
   POSTGRES_USER: "user"
