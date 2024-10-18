@@ -1,15 +1,6 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: front-shared-storage
-provisioner: kubernetes.io/no-provisioner # 동적 프로비저닝 안 함. 주로 로컬 볼륨에서 사용
-volumeBindingMode: WaitForFirstConsumer # pvc가 파드에 의해 실행 될 때까지 바인딩 보류
-
----
-
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
   name: back-shared-storage
 provisioner: kubernetes.io/no-provisioner # 동적 프로비저닝 안 함. 주로 로컬 볼륨에서 사용
 volumeBindingMode: WaitForFirstConsumer # pvc가 파드에 의해 실행 될 때까지 바인딩 보류
