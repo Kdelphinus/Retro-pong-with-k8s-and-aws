@@ -13,7 +13,7 @@ metadata:
   name: back-pv
 spec:
   capacity:
-    storage: 500Mi
+    storage: 2Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteMany  # 여러 파드에서 동시에 읽기, 쓰기 가능
@@ -42,7 +42,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 500Mi
+      storage: 1Gi
 
 ---
 
@@ -56,5 +56,5 @@ spec:
     - ReadWriteMany # backend and frontend
   resources:
     requests:
-      storage: 100Mi
+      storage: 1Gi
   storageClassName: back-shared-storage
