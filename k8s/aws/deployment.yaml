@@ -19,7 +19,7 @@ spec:
             claimName: db-data
       containers:
       - env:
-        - name: PGDATA  # efs와 postgre 간 충돌을 막기 위함
+        - name: PGDATA  # ebs와 postgre 간 충돌을 막기 위함
           valueFrom:
             configMapKeyRef:
               key: PGDATA
